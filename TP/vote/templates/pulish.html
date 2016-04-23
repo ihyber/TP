@@ -1,0 +1,11 @@
+<meta charset="UTF-8">
+<form action="/vote/pulish_getcheck/" method="get">
+
+{% for item in pulish_event %}
+	<input type="checkbox" value="{{ item.event_id }}" name="check_box_list"/>{{item.event_discribe}}
+{% endfor %}
+	<input type="submit" value="发布"/>
+</form>
+
+
+

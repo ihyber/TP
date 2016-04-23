@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<div id="page_all" align="center">
+		
+		<div id="page_nag" style="width: 80%; margin-top: 40px;background-color: " align="center">
+			<iframe src="/vote/loadPageHeader/"   frameborder="0" scrolling="no" width="100%" height="50px"></iframe>
+		</div>
+
+		<div id="events" style="width: 80%; margin-top: 50px">
+					<div align="center" style="color: red">{{ event.event_discribe }} 投票结果</div>
+				
+			<table width="100%" border="0" style="padding: 1px;margin: 1px">
+				<tr align="center" style="background-color: #33aabb">
+					<td>选项内容</td>
+					<td>投票计数</td>
+					<td>投票计数%</td>
+				</tr>
+				{% for item in choice_list %}
+				<tr align="center">
+					<td> {{ item.choice_detail }}</td>
+					<td> {{ item.count }}</td>
+					<td> {% widthratio item.count total 100 %} %</td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
+
+		<div style="width: 80%; margin-top: 10px;background-color: ;display: none;" align="center" >
+			<table border="0"> 
+				<tr >
+					<td>第{{page_no}} 页</td>
+					<td><a href="#">下一页</a></td>
+					<td><a href="#">上一页</a></td>
+					<td>总共{{page_total}}页</td>
+				</tr>
+		</div>
+	</div>
+</body>
+</html>

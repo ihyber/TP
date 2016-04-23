@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="/media/js/jquery-2.2.3.js"></script>
+<script type="text/javascript" src="/media/js/highcharts.js"></script>
+<script type="text/javascript" src="/media/js/echarts.js"></script>
+</head>
+<body>
+	<div id="page_all" align="center">
+
+		<div id="page_nag"
+			style="width: 80%; margin-top: 40px; background-color:"
+			align="center">
+			<iframe src="/vote/loadPageHeader/" frameborder="0" scrolling="no"
+				width="100%" height="50px"></iframe>
+		</div>
+
+		<div id="events" style="width: 80%; margin-top: 50px">
+			<table width="100%" border="0" style="padding: 10px; margin: 1px">
+				<tr background="" align="left">
+					<td colspan="4">投票事件</td>
+				</tr>
+				{% for item in event_list %}
+				<tr align="left">
+					<td colspan="4"><a
+						href="/vote/readEvent/?eventId={{ item.event_id }}"> {{ item.event_discribe }}</a></td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
+
+		<div style="width: 80%; margin-top: 10px; background-color:;"
+			align="center">
+			<table border="0">
+				<tr>
+					<td>第{{page_no}} 页</td>
+					<td><a href="#">下一页</a></td>
+					<td><a href="#">上一页</a></td>
+					<td>总共{{page_total}}页</td>
+				</tr>
+				</div>
+				</div>
+				<div id="chartDiv"
+					style="width: 600px; height: 300px; background-color:"></div>
+				<div id="main"
+					style="width: 600px; height: 300px; background-color:"></div>
+</body>
+</html>
+<script type="text/javascript">
+	var resultData=[];
+	$(document).ready(function() {
+		loadData()
+	});
+	function loadData() {
+
+		$.ajax({
+			type : 'get',
+			url : "/vote/queryVoteResult/",
+			data : {
+				"eventId" : 3
+			},
+			success : function(json) {
+				var total = 0;
+				//投票总数
+				$.each(json, function(i, r) {
+					total += r.fields.count;
+				});
+				var result = [];
+				var index = 0;
+				$.each(json, function(i, r) {
+					result[index] = r.fields.count / total;
+					resultData[index]={name:r.fields.choice_detail,value:r.fields.count / total*100}
+					index++
+				});
+				console.dir(resultData)
+			},
+			dataType : "json"
+		});
+	}
+	function show() {
+		$('#chartDiv')
+				.highcharts(
+						{
+							chart : {
+								plotBackgroundColor : null,
+								plotBorderWidth : null,
+								plotShadow : false
+							},
+							title : {
+								text : 'Browser market shares at a specific website, 2010'
+							},
+							tooltip : {
+								pointFormat : '{series.name}: <b>{point.percentage:.1f}%</b>'
+							},
+							plotOptions : {
+								pie : {
+									allowPointSelect : true,
+									cursor : 'pointer',
+									dataLabels : {
+										enabled : true,
+										color : '#000000',
+										connectorColor : '#000000',
+										format : '<b>{point.name}</b>: {point.percentage:.1f} %'
+									}
+								}
+							},
+							series : [ {
+								type : 'pie',
+								name : 'Browser share',
+								data : [ [ 'Firefox', 45.0 ], [ 'IE', 26.8 ], {
+									name : 'Chrome',
+									y : 12.8,
+									sliced : true,
+									selected : true
+								}, [ 'Safari', 8.5 ], [ 'Opera', 6.2 ],
+										[ 'Others', 0.7 ] ]
+							} ]
+						});
+	}
+</script>
+<script type="text/javascript">
+	var myChart = echarts.init(document.getElementById('main'));
+	option = {
+		tooltip : {
+			trigger : 'item',
+			formatter : "{a} <br/>{b}: {c} ({d}%)"
+		},
+		legend : {
+			orient : 'vertical',
+			x : 'left',
+			data : [ '直接访问', '邮件营销', '联盟广告', '视频广告', '搜索引擎' ]
+		},
+		series : [ {
+			name : '访问来源',
+			type : 'pie',
+			radius : [ '50%', '70%' ],
+			avoidLabelOverlap : false,
+			label : {
+				normal : {
+					show : false,
+					position : 'center'
+				},
+				emphasis : {
+					show : true,
+					textStyle : {
+						fontSize : '30',
+						fontWeight : 'bold'
+					}
+				}
+			},
+			labelLine : {
+				normal : {
+					show : false
+				}
+			},
+			data : [ {
+				value : 335,
+				name : '直接访问'
+			}, {
+				value : 310,
+				name : '邮件营销'
+			}, {
+				value : 234,
+				name : '联盟广告'
+			}, {
+				value : 135,
+				name : '视频广告'
+			}, {
+				value : 1548,
+				name : '搜索引擎'
+			} ]
+		} ]
+	};
+	myChart.setOption(option);
+</script>

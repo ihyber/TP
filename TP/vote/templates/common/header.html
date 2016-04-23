@@ -1,0 +1,12 @@
+<meta charset="UTF-8">
+<div id="page_nag"
+		style="width: 80%; margin-top: 20px; background-color:" align="center">
+		<table style="" border="0">
+			<tr align="left">
+				<td><a href="/vote/listCategory/" target="_blank">首页</a></td> 
+				{% for item in CateList	%}
+				<td><a href="#" target="_blank">{{ item.category_name }}</a></td> 
+				{% endfor %}
+			</tr>
+		</table>
+</div>

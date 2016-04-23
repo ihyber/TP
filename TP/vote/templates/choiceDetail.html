@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<div id="page_all"  align="center">
+<div  id="page_nag" style="width:80%" align="center">
+	<table style="width:100%;" border="1" background="#eee">
+		<tr align="center"> 
+			<td><a href="#">首页</a></td>
+			<td><a href="#">娱乐</a></td>
+			<td><a href="#">生活</a></td>
+			<td><a href="#">军事</a></td>
+			<td><a href="#">科技</a></td>
+			
+		</tr>	
+	</table>
+</div>
+
+<div id="events"  style="width:80%" >
+		<table width="100%" border="1">
+			<tr  background="#eeeeee">
+				<td  colspan="4">投票事件</td>
+			</tr>
+			{% for item in event_list %}
+			<tr>
+				<td colspan="4"><a href="#" onclick="function(){alert('haha')}">{{ item.event_discribe }}</a></td>
+			</tr>
+			{% endfor %}
+			<tr>
+				<td>第{{page_no}} 页</td> 
+				<td><a href="#">下一页</a></td> 
+				<td><a href="#">上一页</a></td>
+				<td>总共{{page_total}}页</td>
+			</tr>
+		</table>
+</div>
+</div>
+</body>
+</html>
