@@ -3,32 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<link rel="stylesheet" type="text/css"
+	href="/media/js/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="/media/js/themes/icon.css">
+<link rel="stylesheet" type="text/css" href="/media/js/demo.css">
 <script type="text/javascript" src="/media/js/jquery-2.2.3.js"></script>
 <script type="text/javascript" src="/media/js/highcharts.js"></script>
 <script type="text/javascript" src="/media/js/echarts.js"></script>
+<script type="text/javascript" src="/media/js/jquery.easyui.min.js"></script>
 </head>
-<body>
-	<div id="page_all" align="center">
-
+<body style="text-align: center;">
+	<div id="page_all" align="center"
+		style="border: 1px; width: 1200px; margin: 0px auto;">
 		<div id="page_nag"
-			style="width: 80%; margin-top: 40px; background-color:"
+			style="width: 80%; margin-top: 40px; background-color:; border: 1px"
 			align="center">
 			<iframe src="/vote/loadPageHeader/" frameborder="0" scrolling="no"
 				width="100%" height="50px"></iframe>
 		</div>
 
 		<div id="events" style="width: 80%; margin-top: 50px">
-			<table width="100%" border="0" style="padding: 10px; margin: 1px">
+			<table width="100%" border="1" style="padding: 10px; margin: 1px">
 				<tr background="" align="left">
 					<td colspan="4">投票事件</td>
 				</tr>
 				{% for item in event_list %}
 				<tr align="left">
 					<td colspan="4"><a
-						href="/vote/readEvent/?eventId={{ item.event_id }}"> {{	item.event_discribe }}</a></td>
+						href="/vote/readEvent/?eventId={{ item.event_id }}">
+							{{ item.event_discribe }}</a></td>
 				</tr>
 				{% endfor %}
 			</table>
+			<div id="tb" style="width: 100%;"></div>
 		</div>
 
 		<div style="width: 80%; margin-top: 10px; background-color:;"
@@ -46,13 +53,46 @@
 					style="width: 600px; height: 300px; background-color:"></div>
 				<div id="main"
 					style="width: 600px; height: 300px; background-color:"></div>
+				
 </body>
+
 </html>
 <script type="text/javascript">
 	var resultData = [];
 	$(document).ready(function() {
-		loadData()
+		loadData();
+		initGrid();
 	});
+	function initGrid() {
+		$('#tb').datagrid({
+			columns : [ [ {
+				field : 'code',
+				title : 'Code',
+				width : 100
+			}, {
+				field : 'name',
+				title : 'Name',
+				width : 100
+			}, {
+				field : 'price',
+				title : 'Price',
+				width : 100,
+				align : 'right'
+			} ] ],
+			toolbar : [ {
+				iconCls : 'icon-edit',
+				handler : function() {
+					alert('edit')
+				}
+			}, '-', {
+				iconCls : 'icon-help',
+				handler : function() {
+					alert('help')
+				}
+			} ]
+		});
+	}
+
 	function loadData() {
 
 		$.ajax({
@@ -77,15 +117,18 @@
 					}
 					index++
 				});
-				console.dir(resultData)
-				initchart();
+				initchart(resultData);
 			},
 			dataType : "json"
 		});
 	}
 
-	function initchart() {
+	function initchart(jsonData) {
 		var myChart = echarts.init(document.getElementById('main'));
+		var legendData = [];
+		$.each(jsonData, function(i, r) {
+			legendData[i] = r.name;
+		});
 		option = {
 			tooltip : {
 				trigger : 'item',
@@ -94,10 +137,10 @@
 			legend : {
 				orient : 'vertical',
 				x : 'left',
-				data : [ '直接访问', '邮件营销', '联盟广告', '视频广告', '搜索引擎' ]
+				data : legendData
 			},
 			series : [ {
-				name : '访问来源',
+				name : '选项',
 				type : 'pie',
 				radius : [ '50%', '70%' ],
 				avoidLabelOverlap : false,
@@ -119,22 +162,7 @@
 						show : false
 					}
 				},
-				data : [ {
-					value : 335,
-					name : '直接访问'
-				}, {
-					value : 310,
-					name : '邮件营销'
-				}, {
-					value : 234,
-					name : '联盟广告'
-				}, {
-					value : 135,
-					name : '视频广告'
-				}, {
-					value : 1548,
-					name : '搜索引擎'
-				} ]
+				data : jsonData
 			} ]
 		};
 		myChart.setOption(option);
