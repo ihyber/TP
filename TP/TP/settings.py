@@ -65,8 +65,8 @@ DATABASES = {
 #         'HOST': 'hdm140015387.my3w.com',                      # Set to empty string for localhost. Not used with sqlite3.
         'NAME':'qh',
         'USER':'root',
-        'PASSWORD':'liyang',
-        'HOST':'localhost',
+        'PASSWORD':'978472168liyang',
+        'HOST':'120.24.45.171',
         'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
