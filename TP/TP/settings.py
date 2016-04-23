@@ -110,8 +110,8 @@ LOGGING = {
 
 APPEND_SLASH=False 
 
-STATIC_PATH="TP/vote/templates/media/"
+STATIC_PATH="TP/TP/vote/templates/media/"
 
-MEDIA_ROOT= "TP/vote/templates/media/"
+MEDIA_ROOT= "TP/TP/vote/templates/media/"
 
 MEDIA_URL = "/media/"
