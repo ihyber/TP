@@ -14,7 +14,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 TEMPLATE_DIRS = (os.path.join(BASE_DIR, ''),)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
+FILE_CHARSET= 'utf-8' 
 
+DEFAULT_CHARSET='utf-8'
+
+LANGUAGE_CODE = 'zh-CN'
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'du!td*alsd2%*2ieprtr^!09p!=6tnwsbn+$o6^m&#)ao@g%zk'
 
@@ -35,13 +39,15 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.comments',
+    'django.contrib.sites',
     "vote"
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+#     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -52,21 +58,18 @@ ROOT_URLCONF = 'TP.urls'
 
 WSGI_APPLICATION = 'TP.wsgi.application'
 
-
+# GDAL_LIBRARY_PATH=''
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
 DATABASES = {
      'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-#         'NAME': 'hdm140015387_db',                      # Or path to database file if using sqlite3.
-#         'USER': 'hdm140015387',                      # Not used with sqlite3.
-#         'PASSWORD': '978472168liyang',                  # Not used with sqlite3.
-#         'HOST': 'hdm140015387.my3w.com',                      # Set to empty string for localhost. Not used with sqlite3.
+
         'NAME':'qh',
         'USER':'root',
-        'PASSWORD':'978472168liyang',
-        'HOST':'120.24.45.171',
+        'PASSWORD':'root',
+        'HOST':'192.168.0.103',
         'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
