@@ -9,11 +9,15 @@ from distutils.command.upload import upload
 class userpro(models.Model):
     user=models.OneToOneField(User,unique=True)
     user_img=models.ImageField(upload_to='head',verbose_name='用户头像')
-    sex=models.BooleanField(verbose_name="性别")
+    sex=models.BooleanField(verbose_name="女生")
     age=models.IntegerField(verbose_name='年龄')
     phone=models.CharField(max_length=11,verbose_name='手机号码')
-    city=models.CharField(max_length=12,verbose_name='所在城市')
-    carrer=models.CharField(max_length=12,verbose_name='职业')
+    city=models.CharField(max_length=45,verbose_name='所在城市')
+    carrer=models.CharField(max_length=45,verbose_name='职业')
+    
+    class Meta:
+        verbose_name = "用户扩展"
+        verbose_name_plural = "用户扩展"
     
 # Create your models here.
 class Cat(models.Model):

@@ -1,11 +1,31 @@
 <meta charset="UTF-8">
+<style type="text/css">
+a:link {
+	color:#000000;
+    text-decoration:none;
+}
+a:visited {
+    color:#000000;
+    text-decoration:none;
+}
+    
+a:hover {
+    color:#FF0000;
+    text-decoration:none;
+    }
+    
+a:active {
+    color:#FFFFFF;
+    text-decoration:none;
+}
+</style>
 <div id="page_nag"
 		style="width: 80%; margin-top: 10px; background-color:" align="center">
 		<table  style="font-weight: bold;"   border="0" >
 			<tr align="left" >
 				<td><a href="/vote/listCategory/" target="_blank"><span style="margin-left: 50px">首页</span></a></td> 
 				{% for item in CateList	%}
-				<td><a href="#" target="_blank"><span style="margin-left: 50px">{{ item.category_name }}</span></a></td> 
+				<td><a href="/vote/listCategory/?category_id={{ item.id }}" target="_blank"><span style="margin-left: 50px">{{ item.category_name }}</span></a></td> 
 				{% endfor %}
 			</tr>
 		</table>

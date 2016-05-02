@@ -3,64 +3,70 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<link rel="stylesheet" type="text/css"
+	href="/media/js/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="/media/js/themes/icon.css">
+<!--  <link rel="stylesheet" type="text/css" href="/media/js/demo.css"> -->
+<script type="text/javascript" src="/media/js/jquery-2.2.3.js"></script>
+<script type="text/javascript" src="/media/js/highcharts.js"></script>
+<script type="text/javascript" src="/media/js/echarts.js"></script>
+<script type="text/javascript" src="/media/js/jquery.easyui.min.js"></script>
+<style type="text/css">
+body {
+	text-align: center;
+	background-color: #F5F5F5
+}
+</style>
 </head>
 <body>
 	<div id="page_all" align="center">
-		<div id="page_nag" style="width: 80%; margin-top: 40px;background-color: " align="center">
-			<iframe src="/vote/loadPageHeader/"   frameborder="0" scrolling="no" width="100%" height="50px"></iframe>
+		<div id="page_nag"
+			style="width: 80%; margin-top: 40px; background-color:"
+			align="center">
+			<iframe src="/vote/loadPageHeader/" frameborder="0" scrolling="no"
+				width="100%" height="50px"></iframe>
 		</div>
-		
-		<form action="/vote/saveChoice/" method="get">
-			<div id="events" style="width: 80%; margin-top: 50px">
-				<table width="100%" border="0" style="padding: 10px;margin: 1px">
-					<tr background="" align="left">
-						<td colspan="4">投票事件</td>
-					</tr>
-					<tr align="left">
-						<td colspan="4"><a href="#"> {{ event.event_discribe }}</a>
-						<input type="hidden" name="eventId" value="{{ event.event_id }}"/></td>
-					</tr>
-				</table>
-			</div>
-			<div id="choices" style="width: 80%; margin-top: 10px">
-				<table width="100%" border="0" style="padding: 10px;margin: 1px">
-					{% for item in chioce_list %}
-						{% if event.is_single == 1 %}
-							<tr>
-								<td><img alt="{{ item.choice_detail }}" src="/media/{{ item.choice_pic }}"/></td>
-							</tr>
-							<tr>
-								<td><input type="radio" name="choice" value="{{ item.id }}" /> {{ item.choice_detail }}</td>
-							</tr>
-						{% else %}
-							<tr >
-								<td><img alt="{{ item.choice_detail }}" src="/media/{{ item.choice_pic }}" /></td>
-							</tr>
-							<tr>
-								<td ><input type="checkbox" name="choice" value="{{ item.id }}" /> {{ item.choice_detail }}</td>
-							</tr>
-						{% endif %}
-					{% endfor %}
-					
+		<form action="/vote/saveChoice/" method="get" id="form">
+			<div id="choices" style="width: 80%; margin-top: 10px" align="left">
+				<div style="width: 100%">
+					{{ event.event_discribe }} <input type="hidden" name="eventId"
+						value="{{ event.event_id }}" />
+				</div>
+				<table width="100%" style="padding: 10px; margin: 1px">
+					{% for item in chioce_list %} {% if event.is_single == 1 %}
 					<tr>
-						<td>
-							<input type="submit" style="width: 100px ;margin-top: 10px;background-color: #00ffff" value="提交" />
-						</td>
+						<td><img alt="{{ item.choice_detail }}"
+							src="/media/{{ item.choice_pic }}" /></td>
+					</tr>
+					<tr>
+						<td><input type="radio" name="choice" value="{{ item.id }}" />
+							{{ item.choice_detail }}</td>
+					</tr>
+					{% else %}
+					<tr>
+						<td><img alt="{{ item.choice_detail }}"
+							src="/media/{{ item.choice_pic }}" /></td>
+					</tr>
+					<tr>
+						<td><input type="checkbox" name="choice"
+							value="{{ item.id }}" /> {{ item.choice_detail }}</td>
+					</tr>
+					{% endif %} {% endfor %}
+
+					<tr>
+						<td><a id="submitBtn" href="#" class="easyui-linkbutton"
+							data-options="iconCls:'icon-ok'">投 票</a></td>
 					</tr>
 				</table>
 			</div>
-	
-			<div style="width: 80%; margin-top: 10px;background-color: ;display: none;" align="center" >
-				<table border="0"> 
-					<tr >
-						<td>第{{page_no}} 页</td>
-						<td><a href="#">下一页</a></td>
-						<td><a href="#">上一页</a></td>
-						<td>总共{{page_total}}页</td>
-					</tr>
-			</div>
-		
 		</form>
 	</div>
 </body>
+<script type="text/javascript">
+	$(function() {
+		$('#submitBtn').bind('click', function() {
+			$('#form').submit();
+		});
+	});
+</script>
 </html>

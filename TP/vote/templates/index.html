@@ -6,101 +6,203 @@
 <link rel="stylesheet" type="text/css"
 	href="/media/js/themes/default/easyui.css">
 <link rel="stylesheet" type="text/css" href="/media/js/themes/icon.css">
-<link rel="stylesheet" type="text/css" href="/media/js/demo.css">
+<!--  <link rel="stylesheet" type="text/css" href="/media/js/demo.css"> -->
 <script type="text/javascript" src="/media/js/jquery-2.2.3.js"></script>
 <script type="text/javascript" src="/media/js/highcharts.js"></script>
 <script type="text/javascript" src="/media/js/echarts.js"></script>
 <script type="text/javascript" src="/media/js/jquery.easyui.min.js"></script>
 </head>
-<body style="text-align: center;">
+<body style="text-align: center; background-color: #F5F5F5">
 	<div id="page_all" align="center"
 		style="border: 1px; width: 1200px; margin: 0px auto;">
-		<div id="page_nag"
-			style="width: 80%; margin-top: 40px; background-color:; border: 1px"
+		<div id="page_nag" style="width: 80%; margin-top: 40px; border: 0px"
 			align="center">
 			<iframe src="/vote/loadPageHeader/" frameborder="0" scrolling="no"
 				width="100%" height="50px"></iframe>
 		</div>
-
-		<div id="events" style="width: 80%; margin-top: 50px">
-			<table width="100%" border="1" style="padding: 10px; margin: 1px">
-				<tr background="" align="left">
-					<td colspan="4">投票事件</td>
-				</tr>
-				{% for item in event_list %}
-				<tr align="left">
-					<td colspan="4"><a
-						href="/vote/readEvent/?eventId={{ item.event_id }}">
-							{{ item.event_discribe }}</a></td>
-				</tr>
-				{% endfor %}
-			</table>
-			<div id="tb" style="width: 100%;"></div>
+		<div id="events" style="width: 80%; margin-top: 20px;">
+			<div align="left">投票事件</div>
+			<div id="event_grid" style="width: 100%; margin-top: 10px;"
+				align="center"></div>
+		</div>
+		<div style="width: 80%; margin-top: 10px;">
+			<div id="chartDiv"
+				style="width: 100%; height: 300px; background-color:; float: left; border: 0px"></div>
+			<div id="main"
+				style="width: 0%; height: 300px; background-color:; float: right; border: 0px"></div>
+			<div id="event_div" style="width: 100%; color: green"></div>
 		</div>
 
-		<div style="width: 80%; margin-top: 10px; background-color:;"
-			align="center">
-			<table border="0">
-				<tr>
-					<td>第{{page_no}} 页</td>
-					<td><a href="#">下一页</a></td>
-					<td><a href="#">上一页</a></td>
-					<td>总共{{page_total}}页</td>
-				</tr>
-				</div>
-				</div>
-				<div id="chartDiv"
-					style="width: 600px; height: 300px; background-color:"></div>
-				<div id="main"
-					style="width: 600px; height: 300px; background-color:"></div>
-				
+	</div>
 </body>
 
 </html>
 <script type="text/javascript">
 	var resultData = [];
 	$(document).ready(function() {
-		loadData();
+		//loadData();
 		initGrid();
+		init2DBar()
 	});
-	function initGrid() {
-		$('#tb').datagrid({
-			columns : [ [ {
-				field : 'code',
-				title : 'Code',
-				width : 100
-			}, {
-				field : 'name',
-				title : 'Name',
-				width : 100
-			}, {
-				field : 'price',
-				title : 'Price',
-				width : 100,
-				align : 'right'
-			} ] ],
-			toolbar : [ {
-				iconCls : 'icon-edit',
-				handler : function() {
-					alert('edit')
-				}
-			}, '-', {
-				iconCls : 'icon-help',
-				handler : function() {
-					alert('help')
-				}
-			} ]
+	function getUrlParam(name) {
+		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+		var r = window.location.search.substr(1).match(reg); //匹配目标参数
+		if (r != null)
+			return unescape(r[2]);
+		return null; //返回参数值
+	}
+	function init2DBar() {
+		var bar = echarts.init(document.getElementById("chartDiv"));
+		var ydata = [];
+		var xdata = [];
+		$.ajax({
+			type : 'get',
+			url : "/vote/latest/",
+			data : {},
+			success : function(json) {
+				var eventId;
+				$.each(json, function(i, r) {
+					//选项所得的票数。y轴的值
+					ydata[i] = r.fields.count;
+					//选项的名称，即x坐标轴	
+					xdata[i] = r.fields.choice_detail;
+					eventId = r.fields.event_id;
+				});
+				option = {
+					color : [ "#50A74B" ],
+					tooltip : {
+						trigger : 'axis'
+					},
+					legend : {
+						data : [ '蒸发量' ]
+					},
+					toolbox : {
+						show : true,
+						feature : {
+							mark : {
+								show : true
+							},
+							dataView : {
+								show : true,
+								readOnly : false
+							},
+							magicType : {
+								show : true,
+								type : [ 'line', 'bar' ]
+							},
+							restore : {
+								show : true
+							},
+							saveAsImage : {
+								show : true
+							}
+						}
+					},
+					calculable : true,
+					xAxis : [ {
+						type : 'category',
+						data : xdata
+					} ],
+					yAxis : [ {
+						type : 'value'
+					} ],
+					series : [ {
+						name : '所得票数',
+						type : 'bar',
+						data : ydata,
+						markLine : {
+							data : [ {
+								type : 'average',
+								name : '平均值'
+							} ]
+						}
+					} ]
+				};
+				bar.setOption(option);
+				$.ajax({
+					type : 'get',
+					url : "/vote/loadEvent/",
+					data : {
+						eventId : eventId
+					},
+					dataType : "json",
+					success : function(json) {
+						$("#event_div").html(
+								'"' + json[0].fields.event_discribe + '"投票结果')
+					}
+				});
+
+			},
+			dataType : "json"
 		});
+	}
+	function initGrid() {
+		var url = "/vote/queryEvent/";
+		$('#event_grid')
+				.datagrid(
+						{
+							url : url,
+							queryParams : {
+								category_id : getUrlParam("category_id")
+							},
+							pageNumber : 1,
+							pageSize : 10,
+							pageList : [ 10, 20, 25, 30, 35, 40, 45, 50, 100,
+									200 ],
+							rownumbers : true,
+							pagination : true,
+							pagePosition : "bottom",
+							loadFilter : function(data) {
+								var result = [];
+								$
+										.each(
+												data,
+												function(i, r) {
+													result[i] = r.fields;
+													result[i].pk = r.pk;
+													result[i].op = '<a target="_blank class="easyui-linkbutton"  href="/vote/readEvent/?eventId='
+															+ r.pk
+															+ '" >投票</a> | <a target="_blank class="easyui-linkbutton"  href="/vote/go/?eventId='
+															+ r.pk
+															+ '&url=vote/templates/result.html" >结果</a>';
+
+												});
+								return result;
+							},
+							onDblClickRow : function(i, row) {
+								window.location.href = "/vote/readEvent/?eventId="
+										+ row.pk;
+							},
+							columns : [ [ {
+								width:400,
+								field : 'event_discribe',
+								title : '事件名称',
+								align : 'left'
+							}, {
+								width:200,
+								field : 'pu_date',
+								title : '开始时间',
+								align : 'center',
+								DataFormatString : "{yyyy-MM-dd HH:mm:ss}"
+							}, {
+								width:200,
+								field : 'end_date',
+								title : '结束时间',
+								align : 'center'
+							}, {
+								field : 'op',
+								title : "操作",
+								width : 100,
+								align : 'center'
+							} ] ]
+						});
 	}
 
 	function loadData() {
-
 		$.ajax({
 			type : 'get',
 			url : "/vote/queryVoteResult/",
-			data : {
-				"eventId" : 3
-			},
+			data : {},
 			success : function(json) {
 				var total = 0;
 				//投票总数
@@ -113,7 +215,8 @@
 					result[index] = r.fields.count / total;
 					resultData[index] = {
 						name : r.fields.choice_detail,
-						value : r.fields.count / total * 100
+						value : r.fields.count / total * 100,
+						count : r.fields.count
 					}
 					index++
 				});

@@ -3,42 +3,158 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<link rel="stylesheet" type="text/css"
+	href="/media/js/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="/media/js/themes/icon.css">
+<!--  <link rel="stylesheet" type="text/css" href="/media/js/demo.css"> -->
+<script type="text/javascript" src="/media/js/jquery-2.2.3.js"></script>
+<script type="text/javascript" src="/media/js/highcharts.js"></script>
+<script type="text/javascript" src="/media/js/echarts.js"></script>
+<script type="text/javascript" src="/media/js/jquery.easyui.min.js"></script>
+<style type="text/css">
+body {
+	text-align: center;
+	background-color: #F5F5F5
+}
+</style>
 </head>
 <body>
 	<div id="page_all" align="center">
-		
-		<div id="page_nag" style="width: 80%; margin-top: 40px;background-color: " align="center">
-			<iframe src="/vote/loadPageHeader/"   frameborder="0" scrolling="no" width="100%" height="50px"></iframe>
+		<div id="page_nag"
+			style="width: 80%; margin-top: 40px; background-color:"
+			align="center">
+			<iframe src="/vote/loadPageHeader/" frameborder="0" scrolling="no"
+				width="100%" height="50px"></iframe>
 		</div>
+		<div id="choice_grid" style="width: 80%"></div>
+		<div id="result_chart" style="height: 400px; width: 500px"></div>
+		<div id="event_desc" style="height: 40px; width: 500px"></div>
 
-		<div id="events" style="width: 80%; margin-top: 50px">
-					<div align="center" style="color: red">{{ event.event_discribe }} 投票结果</div>
-				
-			<table width="100%" border="0" style="padding: 1px;margin: 1px">
-				<tr align="center" style="background-color: #33aabb">
-					<td>选项内容</td>
-					<td>投票计数</td>
-					<td>投票计数%</td>
-				</tr>
-				{% for item in choice_list %}
-				<tr align="center">
-					<td> {{ item.choice_detail }}</td>
-					<td> {{ item.count }}</td>
-					<td> {% widthratio item.count total 100 %} %</td>
-				</tr>
-				{% endfor %}
-			</table>
-		</div>
-
-		<div style="width: 80%; margin-top: 10px;background-color: ;display: none;" align="center" >
-			<table border="0"> 
-				<tr >
-					<td>第{{page_no}} 页</td>
-					<td><a href="#">下一页</a></td>
-					<td><a href="#">上一页</a></td>
-					<td>总共{{page_total}}页</td>
-				</tr>
-		</div>
 	</div>
 </body>
+<script type="text/javascript">
+	$(function() {
+		initGrid();
+		initChart();
+		loadEvent();
+	});
+	function loadEvent(){
+		$.ajax({
+			type : 'post',
+			url : "/vote/queryEvent/",
+			data : {
+				eventId : getUrlParam("eventId")
+			},
+			success : function(json) {
+				console.dir(json)
+				$("#event_desc").html(json[0].fields.event_discribe);
+			}
+		});
+	}
+	function getUrlParam(name) {
+		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+		var r = window.location.search.substr(1).match(reg); //匹配目标参数
+		if (r != null)
+			return unescape(r[2]);
+		return null; //返回参数值
+	}
+	function initGrid() {
+		var url = "/vote/queryResultForEvent/";
+		$('#choice_grid').datagrid({
+			queryParams : {
+				eventId : getUrlParam("eventId")
+			},
+			url : url,
+			pageNumber : 1,
+			pageSize : 10,
+			pageList : [ 10, 20, 25, 30, 35, 40, 45, 50, 100, 200 ],
+			rownumbers : true,
+			pagination : true,
+			pagePosition : "bottom",
+			loadFilter : function(data) {
+				var result = [];
+				$.each(data, function(i, r) {
+					result[i] = r.fields;
+					result[i].pk = r.pk
+				});
+				return result;
+			},
+			onDblClickRow : function(i, row) {
+				window.location.href = "/vote/readEvent/?eventId=" + row.pk;
+			},
+			columns : [ [ {
+				field : 'choice_detail',
+				title : '选项',
+				align : 'left',
+				width : 500
+			}, {
+				field : 'count',
+				title : '得票数',
+				align : 'center',
+				width : 200,
+				DataFormatString : "{yyyy-MM-dd HH:mm:ss}"
+			} ] ]
+		});
+	}
+	function initChart() {
+		var myChart = echarts.init(document.getElementById("result_chart"));
+		$.ajax({
+			type : 'post',
+			url : "/vote/queryResultForEvent/",
+			data : {
+				eventId : getUrlParam("eventId")
+			},
+			success : function(json) {
+				var legendData = [];
+				var jsonData = [];
+				$.each(json, function(i, r) {
+					legendData[i] = r.fields.choice_detail;
+					jsonData[i] = {
+						name : r.fields.choice_detail,
+						value : r.fields.count,
+						count : r.fields.count
+					}
+				});
+				option = {
+					tooltip : {
+						trigger : 'item',
+						formatter : "{a} <br/>{b}: {c} ({d}%)"
+					},
+					legend : {
+						orient : 'vertical',
+						x : 'left',
+						data : legendData
+					},
+					series : [ {
+						name : '选项',
+						type : 'pie',
+						radius : [ '50%', '70%' ],
+						avoidLabelOverlap : false,
+						label : {
+							normal : {
+								show : false,
+								position : 'center'
+							},
+							emphasis : {
+								show : true,
+								textStyle : {
+									fontSize : '30',
+									fontWeight : 'bold'
+								}
+							}
+						},
+						labelLine : {
+							normal : {
+								show : false
+							}
+						},
+						data : jsonData
+					} ]
+				};
+				myChart.setOption(option);
+			},
+			dataType : "json"
+		});
+	}
+</script>
 </html>

@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from vote import views
+from vote import userviews
 
 urlpatterns = [
     # ex : /polls/
@@ -16,7 +17,18 @@ urlpatterns = [
     url(r'^readEvent/$', views.readEvent, name='readEvent'),
     url(r'^loadPageHeader/$', views.loadPageHeader, name='loadPageHeader'),
     url(r'^saveChoice/$', views.saveChoice, name='saveChoice'),
-    url(r'^queryVoteResult/$', views.queryVoteResult, name='queryVoteResult'),
+#     url(r'^queryVoteResult/$', views.queryVoteResult, name='queryVoteResult'),
+    url(r'^register/$', userviews.registe, name='register'),
+    url(r'^resetpwd/$', userviews.resetpwd, name='resetpwd'),
+    url(r'^resetpwd_json/$', userviews.resetpwd_json, name='resetpwd_json'),
+    
+    url(r'^queryEvent/$', views.queryEvent, name='queryEvent'),
+    url(r'^latest/$', views.latest, name='latest'),
+    url(r'^loadEvent/$', views.loadEvent, name='loadEvent'),
+    url(r'^go/$', views.go, name='go'),
+    url(r'^queryResultForEvent/$', views.queryResultForEvent, name='queryResultForEvent'),
+    
+    
     
     
 ]
